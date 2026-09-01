@@ -2,7 +2,7 @@
 
 ### What You'll Build
 
-You will build and deploy an end-to-end React application — **Spoonful**, a recipe platform — and incorporate an AI Recipe Assistant that calls an LLM API and renders streamed AI-generated content in the UI.
+You will build and deploy **Spoonful**, an end-to-end React recipe platform. You will also integrate an AI Recipe Assistant that calls an LLM API and displays streamed AI-generated content in the UI.
 
 The Figma design and user stories are provided. Your job is to connect the frontend to the backend, add the AI streaming feature, and deliver a working, deployed product.
 
@@ -12,8 +12,8 @@ This capstone exercises routing, state management, TypeScript, and the full depl
 
 ### Setup
 
-- Clone this repo and `cd unit1-capstone`
-- Remove the git repo: `rm -rf .git`
+- Clone the repo and navigate to `cd unit1-capstone`
+- Remove the Git repo: `rm -rf .git`
 - Initialise a new repo: `git init`
 - Add and commit: `setup starter code`
 - Add a GitHub remote to the local repo
@@ -380,7 +380,7 @@ Make sure your deployed app is accessible and all main features work — includi
 
 ## Must-Have Checklist
 
-> 🥉 Bronze — complete all must-haves
+> 🥉 Bronze — complete all must-haves requirements
 
 - [ ] Backend supports full CRUD, all endpoints in use
 - [ ] React app calls all backend endpoints
@@ -399,8 +399,8 @@ Make sure your deployed app is accessible and all main features work — includi
 
 ## Stretch Goals
 
-> 🥈 Silver — complete 1 stretch goal
-> 🥇 Gold — complete 2
+> 🥈 Silver — complete one stretch goal
+> 🥇 Gold — complete two stretch goals
 
 - Add conversation history to the AI assistant — maintain prior messages and responses within the session so Claude has context for follow-up questions
 - Add Playwright end-to-end tests
