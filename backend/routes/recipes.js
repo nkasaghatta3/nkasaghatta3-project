@@ -4,6 +4,7 @@ const recipesCtrl = require("../controllers/recipes");
 const verifyToken = require("../middleware/verifyToken");
 
 router.get("/", recipesCtrl.getAll);
+router.get("/mine", verifyToken, recipesCtrl.getMine);
 router.get("/:id", recipesCtrl.getOne);
 router.post("/", verifyToken, recipesCtrl.create);
 router.put("/:id", verifyToken, recipesCtrl.update);

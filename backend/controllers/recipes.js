@@ -3,6 +3,7 @@ const Recipe = require("../models/recipe");
 module.exports = {
   create,
   getAll,
+  getMine,
   getOne,
   update,
   delete: deleteOne,
@@ -60,6 +61,15 @@ async function create(req, res) {
     res.status(201).json(recipe);
   } catch (err) {
     res.status(400).json(err);
+  }
+}
+
+async function getMine(req, res) {
+  try {
+    const recipes = await Recipe.find({ ownerId: req.user._id });
+    res.json(recipes);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 }
 

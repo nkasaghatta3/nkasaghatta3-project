@@ -4,6 +4,19 @@ const axios = require("axios");
 const router = express.Router();
 const GEMINI_MODEL = "gemini-3.6-flash";
 
+function readErrorStream(stream) {
+  return new Promise((resolve) => {
+    let chunks = "";
+
+    stream.on("data", (chunk) => {
+      chunks += chunk.toString();
+    });
+
+    stream.on("end", () => resolve(chunks));
+    stream.on("error", () => resolve("(could not read error stream)"));
+  });
+}
+
 router.post("/stream", async (req, res) => {
   const prompt =
     typeof req.body === "string" ? req.body : req.body?.prompt;
@@ -13,6 +26,7 @@ router.post("/stream", async (req, res) => {
   }
 
   if (!process.env.GEMINI_API_KEY) {
+    console.error("GEMINI_API_KEY is not set");
     return res.status(500).json({ error: "AI service is not configured" });
   }
 
@@ -27,7 +41,7 @@ router.post("/stream", async (req, res) => {
           },
         ],
         generationConfig: {
-          maxOutputTokens: 1024,
+          maxOutputTokens: 4096,
         },
       },
       {
@@ -39,20 +53,39 @@ router.post("/stream", async (req, res) => {
       },
     );
 
+    res.status(200);
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
 
-    upstream.data.pipe(res);
     upstream.data.on("error", (error) => {
       console.error("AI stream error:", error.message);
-      res.end();
+
+      if (!res.writableEnded) {
+        res.end();
+      }
     });
+
+    upstream.data.pipe(res);
   } catch (error) {
-    console.error("AI request error:", error.message);
+    const status = error.response?.status || 502;
+    let details = error.message;
+
+    if (error.response?.data?.on) {
+      details = await readErrorStream(error.response.data);
+    }
+
+    console.error("AI request error:", {
+      status,
+      details,
+    });
 
     if (!res.headersSent) {
-      res.status(502).json({ error: "AI service request failed" });
+      res.status(status).json({
+        error: "AI service request failed",
+        details,
+      });
     }
   }
 });
