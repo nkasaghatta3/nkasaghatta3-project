@@ -2,7 +2,6 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-
 import { api } from "../lib/api";
 import { setToken } from "../lib/auth";
 
@@ -52,21 +51,32 @@ function AuthPage({ mode }: AuthPageProps) {
     }
   }
 
+  function handleForgotPassword() {
+    setError("Password reset is not available yet.");
+  }
+
   return (
     <section className="auth-page">
-      <p className="eyebrow">Spoonful</p>
-      <h1>{isSignup ? "Create an account" : "Log in"}</h1>
+      <p className="auth-brand">Spoonful</p>
+
+      <h1>{isSignup ? "Create an Account" : "Welcome Back!"}</h1>
+
       <p className="auth-intro">
         {isSignup
-          ? "Create an account to manage your recipes."
-          : "Log in to manage your recipes."}
+          ? "Create an account to start sharing recipes"
+          : "Log in to your account to continue"}
       </p>
 
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form
+        className={`auth-form${error ? " error-state" : ""}`}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <label htmlFor="auth-email">Email</label>
         <input
           id="auth-email"
           type="email"
+          placeholder="Email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required
@@ -76,6 +86,7 @@ function AuthPage({ mode }: AuthPageProps) {
         <input
           id="auth-password"
           type="password"
+          placeholder="Password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           required
@@ -87,21 +98,35 @@ function AuthPage({ mode }: AuthPageProps) {
           </p>
         )}
 
-        <button type="submit" disabled={isSubmitting}>
+        {!isSignup && (
+          <button
+            className="forgot-password"
+            type="button"
+            onClick={handleForgotPassword}
+          >
+            Forgot Password?
+          </button>
+        )}
+
+        <button className="auth-submit" type="submit" disabled={isSubmitting}>
           {isSubmitting
             ? "Please wait..."
             : isSignup
-              ? "Create account"
+              ? "Create Account"
               : "Log in"}
         </button>
       </form>
 
-      <p className="auth-switch">
-        {isSignup ? "Already have an account?" : "Need an account?"}{" "}
-        <Link to={isSignup ? "/login" : "/signup"}>
-          {isSignup ? "Log in" : "Sign up"}
-        </Link>
-      </p>
+      <Link
+        className="auth-secondary-action"
+        to={isSignup ? "/login" : "/signup"}
+      >
+        {isSignup ? "Log in" : "Create an Account"}
+      </Link>
+
+      <Link className="auth-guest-link" to="/recipes">
+        Explore Recipes without Logging In
+      </Link>
     </section>
   );
 }

@@ -74,24 +74,42 @@ async function getMine(req, res) {
 }
 
 async function getAll(req, res) {
-  console.log("Hello");
   try {
-    const { title, tag, ingredient } = req.query;
+    const { q, title, tag, ingredient } = req.query;
     const query = {};
+
+    if (q) {
+      const searchRegex = createSearchRegex(q);
+
+      query.$or = [
+        { title: searchRegex },
+        { tags: searchRegex },
+        { "ingredients.name": searchRegex },
+      ];
+    }
+
     if (title) {
-      query.title = { $regex: title, $options: "i" };
+      query.title = createSearchRegex(title);
     }
+
     if (tag) {
-      query.tags = tag;
+      query.tags = createSearchRegex(tag);
     }
+
     if (ingredient) {
-      query["ingredients.name"] = ingredient;
+      query["ingredients.name"] = createSearchRegex(ingredient);
     }
+
     const recipes = await Recipe.find(query);
     res.json(recipes);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+}
+
+function createSearchRegex(value) {
+  const escapedValue = String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(escapedValue, "i");
 }
 
 async function getOne(req, res) {

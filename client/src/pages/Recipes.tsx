@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -28,7 +27,10 @@ function Recipes() {
 
   useEffect(() => {
     const controller = new AbortController();
+
     const timer = window.setTimeout(async () => {
+      const keyword = search.trim();
+
       setIsLoading(true);
       setError("");
 
@@ -36,7 +38,7 @@ function Recipes() {
         const response = await axios.get<Recipe[]>(
           `${BACKEND_URL}/api/recipes`,
           {
-            params: search.trim() ? { title: search.trim() } : undefined,
+            params: keyword ? { q: keyword } : undefined,
             signal: controller.signal,
           },
         );
@@ -75,7 +77,7 @@ function Recipes() {
       <h1>Recipe List</h1>
 
       <label className="visually-hidden" htmlFor="recipe-search">
-        Search recipes
+        Search recipes by title, tag, or ingredient
       </label>
 
       <input
@@ -84,7 +86,7 @@ function Recipes() {
         type="search"
         value={search}
         onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search recipes"
+        placeholder="Search by title, tag, or ingredient"
       />
 
       {isLoading && <p className="recipe-status">Loading recipes...</p>}
