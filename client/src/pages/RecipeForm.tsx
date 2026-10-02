@@ -27,8 +27,16 @@ type RecipeResponse = {
 };
 
 function createId() {
-  return crypto.randomUUID();
+  const cryptoApi = globalThis.crypto;
+
+  if (typeof cryptoApi?.randomUUID === "function") {
+    return cryptoApi.randomUUID();
+  }
+
+  return `row-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
+
+
 
 function createIngredient(): IngredientDraft {
   return { id: createId(), name: "", quantity: "" };
